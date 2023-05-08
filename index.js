@@ -20,7 +20,11 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:3001", "http://localhost:3000"],
+    origin: [
+      "http://localhost:3001",
+      "http://localhost:3000",
+      "https://music-simple.web.app",
+    ],
     methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
     credentials: true,
   })
@@ -34,8 +38,8 @@ app.use(
     secret: "the secret",
     saveUninitialized: true,
     cookie: {
-      // sameSite: "none",
-      // secure: true,
+      sameSite: "none",
+      secure: true,
       maxAge: 1000 * 60 * 60,
     },
     resave: false,
@@ -43,17 +47,14 @@ app.use(
   })
 );
 
-// app.use(function (req, res, next) {
-//   res.header(
-//     "Access-Control-Allow-Origin",
-//     "https://music-stream-819bd.web.app, http://192.168.1.10:3000"
-//   );
-//   res.header(
-//     "Access-Control-Allow-Headers",
-//     "Origin, X-Requested-With, Content-Type, Accept"
-//   );
-//   next();
-// });
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "https://music-simple.web.app");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 
 // download
 
