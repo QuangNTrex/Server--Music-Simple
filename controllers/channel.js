@@ -32,6 +32,7 @@ function getAllVideos(channelId, pageToken, videoIds, callback) {
 }
 
 module.exports.postSearchChannel = (req, res, next) => {
+  console.log("in postSearchChannel");
   const q = req.body.q;
 
   const options = {
@@ -52,8 +53,8 @@ module.exports.postSearchChannel = (req, res, next) => {
 };
 
 module.exports.postAddChannel = (req, res, next) => {
-  const channel = req.body.channel;
   console.log("in postAddChannel");
+  const channel = req.body.channel;
   // Sử dụng hàm đệ quy để lấy tất cả các video của một kênh Youtube
   getAllVideos(channel.id.channelId, null, [], (err, videoIds) => {
     if (err) res.send({ error: { message: `Đã xảy ra lỗi: ${err}` } });
@@ -67,11 +68,10 @@ module.exports.postAddChannel = (req, res, next) => {
         videoIds: videoIds,
       }).then((channel) => {
         Channel.findByIdAndUpdate(channel._id).then(async (channel) => {
-          console.log(channel._id);
-          const loaderVideoInfos = [];
-          let cntVideoInfoLoader = 0;
+          let loaderVideoInfos = [];
+          let cntVideoInfoLoader = 0,
+            process = 0;
           const maxProcessPerOne = 100;
-          let process = 0;
 
           for (let i = 0; i < channel.videoIds.length; i++) {
             loaderVideoInfos.push(null);
@@ -87,6 +87,7 @@ module.exports.postAddChannel = (req, res, next) => {
                   videoId: channel.videoIds[i],
                   thumbnailUrl: info.videoDetails.thumbnails[0].url,
                   lengthSeconds: Number(info.videoDetails.lengthSeconds),
+                  publishDate: Date.parse(info.videoDetails.publishDate),
                 };
                 cntVideoInfoLoader++;
                 console.log(cntVideoInfoLoader);
@@ -97,7 +98,11 @@ module.exports.postAddChannel = (req, res, next) => {
           while (cntVideoInfoLoader !== channel.videoIds.length) {
             await delay(3000);
           }
-          channel.videoDetails = loaderVideoInfos;
+
+          channel.videoDetails = loaderVideoInfos.sort((vd1, vd2) => {
+            return vd1.title.localeCompare(vd2.title);
+          });
+
           channel.save().then(() => {
             res.send({
               result: { channel, time: (Date.now() - startTime) / 1000 },

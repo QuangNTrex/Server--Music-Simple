@@ -42,3 +42,23 @@ module.exports.DownloadFn = (req, res, videoId, system, format, quality) => {
     return 1;
   });
 };
+
+module.exports.DownloadMp3 = (res, videoId) => {
+  ytdl.getInfo(`https://www.youtube.com/watch?v=${videoId}`).then((info) => {
+    let title = formatName(info.videoDetails.title);
+    // if (!title || title.includes("#shorts")) return 0;
+
+    let stream = ytdl.downloadFromInfo(info, {
+      format: "mp3",
+      quality: "highestaudio",
+    });
+
+    res.set({
+      "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(
+        title + ".mp3"
+      )}`,
+      "Content-Type": "audio/mpeg",
+    });
+    stream.pipe(res);
+  });
+};

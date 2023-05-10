@@ -1,7 +1,7 @@
 const ytdl = require("ytdl-core");
 const fs = require("fs");
 
-const { DownloadFn } = require("../middleware/download");
+const { DownloadFn, DownloadMp3 } = require("../middleware/download");
 const urlSearch = "https://www.googleapis.com/youtube/v3/search?";
 const key = process.env.KEY;
 
@@ -14,14 +14,9 @@ function createYtbApi(query) {
   console.log(url);
 }
 
-module.exports.Download = async (req, res) => {
+module.exports.Download = (req, res) => {
   const videoId = req.query.videoId;
-  const system = req.query.system || "client";
-  const format = req.query.format || "mp4";
-  const quality = req.query.quality || "highest";
-
-  DownloadFn(req, res, videoId, system, format, quality);
-  res.send({ oke: true });
+  DownloadMp3(res, videoId);
 };
 
 module.exports.DownloadChannel = async (req, res) => {

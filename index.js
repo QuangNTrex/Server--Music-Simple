@@ -1,11 +1,11 @@
+require("dotenv").config();
 const express = require("express");
 const ytdl = require("ytdl-core");
 const cors = require("cors");
 const session = require("express-session");
 const mongoose = require("mongoose");
 const MongoDBStore = require("connect-mongodb-session")(session);
-const URI =
-  "mongodb+srv://devquangnt:quang212511610@cluster0.aiokdwz.mongodb.net/server-audio-video?retryWrites=true&w=majority";
+const URI = process.env.MONGODB_URI;
 
 const store = new MongoDBStore({
   uri: URI,
@@ -31,7 +31,7 @@ app.use(
 );
 app.use(express.json());
 
-app.set("trust proxy", 1);
+// app.set("trust proxy", 1);
 
 app.use(
   session({
@@ -47,18 +47,16 @@ app.use(
   })
 );
 
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "https://music-simple.web.app");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
+// app.use(function (req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "https://music-simple.web.app");
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept"
+//   );
+//   next();
+// });
 
 // download
-
-const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 app.use("/auth", AuthRouter);
 
@@ -68,7 +66,16 @@ app.use("/stream", StreamRouter);
 
 app.use("/channel", ChannelRouter);
 
-app.listen(5000, () => {
+app.use("/get-info/:videoId", (req, res, next) => {
+  ytdl
+    .getBasicInfo(`https://www.youtube.com/watch?v=${req.params.videoId}`)
+    .then((info) => {
+      res.send({ info });
+    });
+});
+
+app.listen(process.env.POST || 5000, () => {
+  console.log(process.env.POST);
   console.log("server on");
   mongoose.connect(URI).then(() => {
     console.log("connected mongodb!");

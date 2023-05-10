@@ -5,5 +5,5 @@ const router = require("express").Router();
 router.get("/download", DownloadController.Download);
 
 // get => download/download-channel
-router.get("/download-channel", DownloadController.DownloadChannel);
+// router.get("/download-channel", DownloadController.DownloadChannel);
 module.exports = router;
