@@ -3,6 +3,8 @@ const ytdl = require("ytdl-core");
 const Channel = require("../models/channel");
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
+let relateUpdateChannels = Date.now() + 1000 * 60 * 60 * 24 * 30;
+
 const youtube = google.youtube({
   version: "v3",
   auth: "AIzaSyDTgn7DUpWq91xTXvQG72bDwAbKTtBwZ5s",
@@ -60,6 +62,7 @@ module.exports.postAddChannel = (req, res, next) => {
     if (err) res.send({ error: { message: `Đã xảy ra lỗi: ${err}` } });
     else {
       const startTime = Date.now();
+      relateUpdateChannels = Date.now();
       Channel.create({
         channelId: channel.id.channelId,
         channelTitle: channel.snippet.channelTitle,
@@ -119,4 +122,8 @@ module.exports.getAllChannel = (req, res, next) => {
   Channel.find().then((channels) => {
     res.send({ result: { channels } });
   });
+};
+
+module.exports.getRelateUpdateChannels = (req, res, next) => {
+  res.send({ result: { time: relateUpdateChannels } });
 };

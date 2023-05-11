@@ -10,4 +10,6 @@ router.post("/add-channel", ChannelController.postAddChannel);
 // query
 router.get("/channels", ChannelController.getAllChannel);
 
+router.get("/relate", ChannelController.getRelateUpdateChannels);
+
 module.exports = router;

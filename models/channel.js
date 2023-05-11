@@ -15,6 +15,7 @@ const ChannelSchema = new Schema({
       title: { type: String, required: true },
       videoId: { type: String, required: true },
       publishDate: { type: Date },
+      love: {type: Boolean, default: false},
     },
   ],
 });
