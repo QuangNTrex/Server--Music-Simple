@@ -32,7 +32,8 @@ app.use(
 app.use(function (req, res, next) {
   res.header(
     "Access-Control-Allow-Origin",
-    "https://music-simple.web.app,http://localhost:3000,http://localhost:3001"
+    // "https://music-simple.web.app,http://localhost:3000,http://localhost:3001"
+    "http://localhost:3000"
   );
   res.header(
     "Access-Control-Allow-Headers",
